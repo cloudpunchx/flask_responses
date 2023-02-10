@@ -6,17 +6,18 @@ app = Flask(__name__)
 
 @app.get('/api/item')
 def get_items():
+    keys = ["itemId","itemName", "itemPrice"]
     result = run_statement('CALL get_items()')
+    items = []
     if(type(result) == list):
-        return make_response(jsonify(result), 200)
+        for item in result:
+            zipped = zip(keys, item)
+            items.append(dict(zipped))
+        return make_response(jsonify(items), 200)
     else:
-        return make_response(jsonify(result), 400)
+        # Mark chose 500 since it's a GET and there was no error from client input so server error is ok
+        return make_response(jsonify(result), 500)
 
-# keys = ["name", "price"]
-# values = (("Jellycat Butterfly", "26.99"), ("Jellycat Picnic Basket", "59.99"))
-# result = []
-# for item in values:
-    # zipped = zip(keys, item)
-    # result.append(dict(zipped))
+
 
 app.run(debug = True)
